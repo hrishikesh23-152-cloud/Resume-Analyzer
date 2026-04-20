@@ -2,6 +2,11 @@
 
 An intelligent full-stack application that analyzes a candidate’s **resume, self-description, and job description** to generate a detailed **AI-powered interview preparation report**.
 
+## 🚀 Live Demo
+Frontend: https://resume-analyzer-kqqa.onrender.com  
+Backend API: https://resume-analyzer-backend-3z1r.onrender.com
+
+
 The system evaluates how well a candidate matches a job role and provides **technical questions, behavioral questions, skill gap analysis, and a preparation plan**.
 
 ---
