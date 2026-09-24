@@ -1,78 +1,71 @@
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../context/auth.context";
-import { register, login, logout,getMe } from "../services/auth.api";
-
-
+import { register, login, logout, getMe } from "../services/auth.api";
 
 export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error("useAuth must be used within an AuthProvider");
+    }
 
-    const context = useContext(AuthContext)
-    const { user, setUser, loading, setLoading } = context
-
+    const { user, setUser, loading, setLoading } = context;
 
     const handleLogin = async ({ email, password }) => {
-        setLoading(true)
+        setLoading(true);
         try {
-            // console.log("Logging in with", email, password)
-            const data = await login({ email, password })
-            setUser(data.user)
-            // console.log(data.message)
-            // console.log(user);s
-            
+            const data = await login({ email, password });
+            setUser(data.user);
+            return data;
         } catch (err) {
-            console.log(err);
-           
+            console.error("Login Error:", err);
+            const msg = err.response?.data?.message || err.message || "Invalid credentials";
+            return { error: msg };
         } finally {
-            console.log("Executed");
-            
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
 
     const handleRegister = async ({ name, email, password }) => {
-        setLoading(true)
+        setLoading(true);
         try {
-            const data = await register({ name, email, password })
-            console.log(data)
-            setUser(data.user)
+            const data = await register({ name, email, password });
+            setUser(data.user);
+            return data;
         } catch (err) {
-            console.log(err.message  )
-            setLoading(false)
+            console.error("Register Error:", err);
+            const msg = err.response?.data?.message || err.message || "Registration failed";
+            return { error: msg };
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
 
     const handleLogout = async () => {
-        setLoading(true)
+        setLoading(true);
         try {
-            const data = await logout()
-            setUser(null)
+            await logout();
+            setUser(null);
         } catch (err) {
-            setLoading(false)
+            console.error("Logout Error:", err);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
-
-        
-    
+    };
 
     useEffect(() => {
-
         const getAndSetUser = async () => {
             try {
-
-                const data = await getMe()
-                setUser(data.user)
-            } catch (err) { } finally {
-                setLoading(false)
+                const data = await getMe();
+                setUser(data.user);
+            } catch (err) {
+                setUser(null);
+            } finally {
+                setLoading(false);
             }
-        }
+        };
 
-        getAndSetUser()
+        getAndSetUser();
+    }, []);
 
-    }, [])
-
-    return { user, loading, handleRegister, handleLogin, handleLogout }
-}
+    return { user, loading, handleRegister, handleLogin, handleLogout };
+};

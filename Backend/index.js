@@ -5,13 +5,13 @@ dotenv.config();
 const PORT = process.env.PORT || 3000;
 
 const StartServer = async () => {
-    try{
+    try {
         await connectDB()
         app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`)
-        })  
+        })
     } catch (error) {
-        console.log("Error starting the server", error)     
+        console.log("Error starting the server", error)
     }
-    }
-    StartServer()
+}
+StartServer()
