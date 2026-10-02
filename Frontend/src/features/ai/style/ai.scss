@@ -76,6 +76,10 @@ $severity-low:    #10b981;
     }
 
     .header-bar-right {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
         .generated-date {
             font-size: 0.8rem;
             color: $text-muted;

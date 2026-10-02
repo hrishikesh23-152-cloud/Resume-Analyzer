@@ -18,8 +18,10 @@ app.use(cors({
 
 const Authrouter = require('./routes/auth.routes');
 const interviewRouter = require('./routes/interview.routes');
+const jobsRouter = require('./routes/jobs.routes');
 
 app.use('/api/auth', Authrouter);
 app.use('/api/interview', interviewRouter);
+app.use('/api/jobs', jobsRouter);
 
 module.exports = app;

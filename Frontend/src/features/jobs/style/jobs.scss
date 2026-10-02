@@ -1,0 +1,235 @@
+$bg-page:        #0b0f19;
+$bg-card:        #141923;
+$border-color:   #232d3f;
+$text-primary:   #f3f4f6;
+$text-muted:     #9ca3af;
+$accent:         #6366f1;
+$accent-alt:     #ec4899;
+$font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+.jobs-page {
+    width: 100%;
+    min-height: 100vh;
+    background-color: $bg-page;
+    background-image:
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.1) 0px, transparent 50%);
+    color: $text-primary;
+    font-family: $font-stack;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1.5rem 3rem;
+    gap: 1.5rem;
+}
+
+.jobs-page .top-nav,
+.jobs-page .page-header {
+    width: 100%;
+    max-width: 1100px;
+}
+
+.jobs-page .nav-brand {
+    cursor: pointer;
+}
+
+.nav-link-btn {
+    color: #c7d2fe;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    border-radius: 0.5rem;
+}
+
+.jobs-search-card {
+    width: 100%;
+    max-width: 1100px;
+    background: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.jobs-search-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.jobs-page .dropzone,
+.jobs-page textarea,
+.jobs-page input,
+.jobs-page select {
+    width: 100%;
+    background: #111622;
+    border: 1px solid $border-color;
+    color: $text-primary;
+    border-radius: 0.75rem;
+    padding: 0.85rem;
+}
+
+.jobs-page textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.jobs-filters {
+    display: grid;
+    grid-template-columns: 1fr 180px auto;
+    gap: 0.75rem;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.jobs-page .generate-btn {
+    background: linear-gradient(135deg, $accent 0%, $accent-alt 100%);
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 0.7rem;
+    padding: 0.8rem 1.2rem;
+    cursor: pointer;
+}
+
+.file-preview-card,
+.jobs-page .dropzone {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 120px;
+}
+
+.report-hint,
+.jobs-page .dropzone__subtitle,
+.job-company,
+.job-location,
+.job-description {
+    color: $text-muted;
+    font-size: 0.9rem;
+}
+
+.jobs-error,
+.jobs-empty {
+    width: 100%;
+    max-width: 1100px;
+    padding: 0.9rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.jobs-empty {
+    border-color: rgba(99, 102, 241, 0.3);
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.role-chips {
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.role-chip {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid $border-color;
+    color: $text-primary;
+    border-radius: 999px;
+    padding: 0.45rem 0.85rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+
+    span {
+        font-size: 0.75rem;
+        color: $text-muted;
+    }
+}
+
+.role-chip--active {
+    border-color: $accent;
+    background: rgba(99, 102, 241, 0.16);
+}
+
+.jobs-grid {
+    width: 100%;
+    max-width: 1100px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.job-card {
+    background: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: 1rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+
+    h3 {
+        margin: 0;
+        font-size: 1.05rem;
+    }
+}
+
+.job-card__top {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.job-role-badge {
+    background: rgba(99, 102, 241, 0.18);
+    color: #c7d2fe;
+    border-radius: 999px;
+    padding: 0.2rem 0.55rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.apply-btn {
+    margin-top: auto;
+    color: #fff;
+    text-decoration: none;
+    background: $accent;
+    text-align: center;
+    border-radius: 0.6rem;
+    padding: 0.6rem;
+    font-weight: 600;
+}
+
+.ai-loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 15, 25, 0.72);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+}
+
+.ai-loading-card {
+    background: $bg-card;
+    border: 1px solid $border-color;
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    max-width: 420px;
+}

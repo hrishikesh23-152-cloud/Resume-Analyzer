@@ -1,6 +1,6 @@
 const { generateInterviewReport } = require("../AI/ai.method");
-const pdfParse = require("pdf-parse");
 const interviewReportModel = require("../models/interviewAI.model");
+const { extractResumeText } = require("../utils/parseResume");
 
 async function generateInterViewReportController(req, res) {
     try {
@@ -8,19 +8,8 @@ async function generateInterViewReportController(req, res) {
         let resumeText = "";
 
         if (req.file && req.file.buffer) {
-            try {
-                if (typeof pdfParse === 'function') {
-                    const parsed = await pdfParse(req.file.buffer);
-                    resumeText = parsed.text || "";
-                } else if (pdfParse.PDFParse) {
-                    const parser = new pdfParse.PDFParse(Uint8Array.from(req.file.buffer));
-                    const resumeContent = await parser.getText();
-                    resumeText = typeof resumeContent === 'string' ? resumeContent : (resumeContent.text || "");
-                } else {
-                    resumeText = req.file.buffer.toString('utf-8');
-                }
-            } catch (pdfErr) {
-                console.error("PDF Parsing error:", pdfErr);
+            resumeText = await extractResumeText(req.file);
+            if (!resumeText) {
                 resumeText = "Could not parse PDF file.";
             }
         }

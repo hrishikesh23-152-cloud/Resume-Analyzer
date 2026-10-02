@@ -129,6 +129,12 @@ const Interview = () => {
                 </div>
 
                 <div className='header-bar-right'>
+                    <button
+                        className='back-btn-pill'
+                        onClick={() => navigate(`/jobs?interviewId=${interviewId}`)}
+                    >
+                        Find Matching Jobs
+                    </button>
                     <span className='generated-date'>
                         Generated {new Date(report.createdAt || Date.now()).toLocaleDateString()}
                     </span>

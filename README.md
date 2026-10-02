@@ -154,6 +154,9 @@ PORT=3000
 MONGO_URI=your_mongodb_connection
 JWT_SECRET=your_jwt_secret
 GROQ_API_KEY=your_groq_api_key
+ADZUNA_APP_ID=your_adzuna_app_id
+ADZUNA_APP_KEY=your_adzuna_app_key
+ADZUNA_COUNTRY=in
 ```
 
 ---

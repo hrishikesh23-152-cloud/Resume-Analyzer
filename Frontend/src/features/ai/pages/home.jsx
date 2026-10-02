@@ -126,6 +126,9 @@ const Home = () => {
                 </div>
 
                 <div className='user-actions'>
+                    <button type="button" className='nav-link-btn' onClick={() => navigate('/jobs')}>
+                        Job Finder
+                    </button>
                     {user && (
                         <div className='user-chip'>
                             <span className='user-avatar'>{user.name ? user.name.charAt(0).toUpperCase() : 'U'}</span>

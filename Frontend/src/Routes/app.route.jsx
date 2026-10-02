@@ -4,6 +4,7 @@ import Login from "../features/auth/pages/Login.jsx"
 import Protected from "../features/auth/components/Protected.jsx"
 import Home from "../features/ai/pages/home.jsx"
 import Interview from "../features/ai/pages/airesult.jsx"
+import JobFinder from "../features/jobs/pages/jobs.jsx"
 export const router = createBrowserRouter([ {
         path: "/login",
         element: <Login />
@@ -22,6 +23,12 @@ export const router = createBrowserRouter([ {
         path: "/interview/:interviewId",
         element: <Protected>
             <Interview />
+        </Protected>
+    },
+    {
+        path: "/jobs",
+        element: <Protected>
+            <JobFinder />
         </Protected>
     }
 ])
