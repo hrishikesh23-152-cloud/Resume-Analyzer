@@ -1,0 +1,38 @@
+.ai-usage-summary {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+    min-width: 0;
+
+    .ai-usage-summary__metric {
+        min-width: 92px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 0.12rem;
+        padding: 0.38rem 0.55rem;
+        border-left: 2px solid #42d6b2;
+        background: rgba(66, 214, 178, 0.06);
+        font-variant-numeric: tabular-nums;
+
+        span,
+        small {
+            color: #a9b5b5;
+            font-size: 0.64rem;
+            line-height: 1.2;
+        }
+
+        strong {
+            color: #eef4f1;
+            font-size: 0.82rem;
+            line-height: 1.2;
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .ai-usage-summary {
+        width: 100%;
+        justify-content: center;
+    }
+}

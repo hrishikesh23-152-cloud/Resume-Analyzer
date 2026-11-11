@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '../style/ai.scss';
 import { useAi } from '../hooks/usAi';
+import AIUsageSummary from '../components/AIUsageSummary.jsx';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const NAV_ITEMS = [
@@ -90,15 +91,9 @@ const RoadMapDay = ({ day }) => (
 // ── Main Component ────────────────────────────────────────────────────────────
 const Interview = () => {
     const [activeNav, setActiveNav] = useState('technical');
-    const { report, getReportById, loading } = useAi();
+    const { report, loading, usage } = useAi();
     const { interviewId } = useParams();
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (interviewId) {
-            getReportById(interviewId);
-        }
-    }, [interviewId]);
 
     const handleBack = () => {
         navigate('/');
@@ -115,31 +110,32 @@ const Interview = () => {
     return (
         <div className='interview-page'>
             {/* Top Navigation Bar with Back Button */}
-            <header className='interview-header-bar'>
-                <div className='header-bar-left'>
-                    <button className='back-btn-pill' onClick={handleBack} title="Back to Home Dashboard">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="19" y1="12" x2="5" y2="12"></line>
-                            <polyline points="12 19 5 12 12 5"></polyline>
-                        </svg>
-                        Back to Dashboard
-                    </button>
-                    <span className='header-divider'>/</span>
-                    <h1 className='report-position-title'>{report.title || 'Interview Preparation Plan'}</h1>
-                </div>
+           <header className='interview-header-bar'>
+    <div className='header-bar-left'>
+        <button className='back-btn-pill' onClick={handleBack} title="Back to Home Dashboard" aria-label="Back to Dashboard">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span className="back-text">Back to Dashboard</span>
+        </button>
+        <span className='header-divider'>/</span>
+        <h1 className='report-position-title'>{report?.title || 'Interview Preparation Plan'}</h1>
+    </div>
 
-                <div className='header-bar-right'>
-                    <button
-                        className='back-btn-pill'
-                        onClick={() => navigate(`/jobs?interviewId=${interviewId}`)}
-                    >
-                        Find Matching Jobs
-                    </button>
-                    <span className='generated-date'>
-                        Generated {new Date(report.createdAt || Date.now()).toLocaleDateString()}
-                    </span>
-                </div>
-            </header>
+    <div className='header-bar-right'>
+        <AIUsageSummary usage={usage} />
+        <button
+            className='jobs-btn-pill'
+            onClick={() => navigate(`/jobs?interviewId=${interviewId}`)}
+        >
+            Find Matching Jobs
+        </button>
+        <span className='generated-date'>
+            Generated {report?.createdAt ? new Date(report.createdAt).toLocaleDateString() : ''}
+        </span>
+    </div>
+</header>
 
             <div className='interview-layout'>
 

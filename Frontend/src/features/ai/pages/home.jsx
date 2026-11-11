@@ -1,35 +1,40 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { homeSchema } from '../schemas/ai.schema';
 import { useAi } from '../hooks/usAi';
 import { useAuth } from '../../auth/hooks/useAuth';
+import AIUsageSummary from '../components/AIUsageSummary.jsx';
 import "../style/home.scss";
+
+const loadingSteps = [
+    "Analyzing target job description...",
+    "Scanning resume & evaluating experience...",
+    "Identifying technical & behavioral skill gaps...",
+    "Formulating 7-day targeted preparation plan...",
+    "Finalizing your personalized interview strategy..."
+];
 
 const Home = () => {
     const { user, handleLogout } = useAuth();
-    const { loading, generateReport, reports } = useAi();
+    const { generating, generateReport, reports, usage } = useAi();
     const navigate = useNavigate();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
     const [selectedFile, setSelectedFile] = useState(null);
     const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+    const [generationError, setGenerationError] = useState('');
 
     const resumeInputRef = useRef();
-
-    const loadingSteps = [
-        "Analyzing target job description...",
-        "Scanning resume & evaluating experience...",
-        "Identifying technical & behavioral skill gaps...",
-        "Formulating 7-day targeted preparation plan...",
-        "Finalizing your personalized interview strategy..."
-    ];
 
     const {
         register,
         handleSubmit,
         setValue,
-        watch,
+        control,
         trigger,
         formState: { errors }
     } = useForm({
@@ -41,18 +46,17 @@ const Home = () => {
         }
     });
 
-    const jobDescriptionVal = watch('jobDescription') || '';
+    const jobDescriptionVal = useWatch({ control, name: 'jobDescription' }) || '';
 
     useEffect(() => {
         let interval;
-        if (loading) {
-            setLoadingMessageIndex(0);
+        if (generating) {
             interval = setInterval(() => {
                 setLoadingMessageIndex((prev) => (prev + 1) % loadingSteps.length);
             }, 3000);
         }
         return () => clearInterval(interval);
-    }, [loading]);
+    }, [generating]);
 
     const handleFileChange = (e) => {
         const file = e.target.files?.[0];
@@ -74,6 +78,8 @@ const Home = () => {
 
     const onSubmit = async (data) => {
         const resumeFile = selectedFile || (resumeInputRef.current?.files?.[0] ?? null);
+        setGenerationError('');
+        setLoadingMessageIndex(0);
         try {
             const result = await generateReport({
                 jobDescription: data.jobDescription,
@@ -85,13 +91,19 @@ const Home = () => {
             }
         } catch (err) {
             console.error("Error generating report:", err);
+            setGenerationError(err.response?.data?.message || err.message || 'Could not generate the interview plan. Please try again.');
         }
+    };
+
+    const onFormSubmit = (event) => {
+        event.preventDefault();
+        handleSubmit(onSubmit)(event);
     };
 
     return (
         <div className='home-page'>
             {/* Loading Overlay */}
-            {loading && (
+            {generating && (
                 <div className='ai-loading-overlay'>
                     <div className='ai-loading-card'>
                         <div className='ai-pulse-ring'>
@@ -112,7 +124,7 @@ const Home = () => {
             )}
 
             {/* Top Navigation / Header */}
-            <nav className='top-nav'>
+            {/* <nav className='top-nav'>
                 <div className='nav-brand'>
                     <div className='brand-icon'>
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -129,6 +141,7 @@ const Home = () => {
                     <button type="button" className='nav-link-btn' onClick={() => navigate('/jobs')}>
                         Job Finder
                     </button>
+                    <AIUsageSummary usage={usage} />
                     {user && (
                         <div className='user-chip'>
                             <span className='user-avatar'>{user.name ? user.name.charAt(0).toUpperCase() : 'U'}</span>
@@ -144,7 +157,55 @@ const Home = () => {
                         Logout
                     </button>
                 </div>
-            </nav>
+            </nav> */}
+            <nav className="top-nav">
+            {/* Brand Logo */}
+            <div className="nav-brand" onClick={() => window.location.href = '/'}>
+                <div className="brand-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                </div>
+                <span className="brand-title">Resume<span className="brand-accent">Analyzer</span></span>
+            </div>
+
+            {/* Mobile Hamburger Button */}
+            <button className="mobile-menu-btn" onClick={toggleMenu} aria-label="Toggle navigation">
+                {isMenuOpen ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                )}
+            </button>
+
+            {/* Navigation Actions (Collapses on Mobile) */}
+            <div className={`user-actions ${isMenuOpen ? 'is-open' : ''}`}>
+                <button type="button" className="nav-link-btn" onClick={() => {/* navigate('/jobs'); setIsMenuOpen(false); */}}>
+                    Job Finder
+                </button>
+                
+                <AIUsageSummary usage={usage} />
+                
+                {user && (
+                    <div className="user-chip">
+                        <span className="user-avatar">{user.name ? user.name.charAt(0).toUpperCase() : 'U'}</span>
+                        <span className="user-name">{user.name || user.email}</span>
+                    </div>
+                )}
+                
+                <button onClick={handleLogout} className="logout-btn" title="Sign Out">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Logout
+                </button>
+            </div>
+        </nav>
 
             {/* Page Header */}
             <header className='page-header'>
@@ -153,7 +214,7 @@ const Home = () => {
             </header>
 
             {/* Main Form Card */}
-            <form onSubmit={handleSubmit(onSubmit)} className='interview-card'>
+            <form onSubmit={onFormSubmit} className='interview-card'>
                 <div className='interview-card__body'>
 
                     {/* Left Panel - Job Description */}
@@ -296,7 +357,7 @@ const Home = () => {
 
                     <button
                         type='submit'
-                        disabled={loading}
+                        disabled={generating}
                         className='generate-btn'
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -305,6 +366,7 @@ const Home = () => {
                         Generate My Interview Strategy
                     </button>
                 </div>
+                {generationError && <p className="generation-error" role="alert">{generationError}</p>}
             </form>
 
             {/* Recent Reports List */}

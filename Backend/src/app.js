@@ -13,7 +13,17 @@ app.use(cors({
         "https://resume-analyzer-kqqa.onrender.com"
         
     ],
-    credentials: true
+    credentials: true,
+    exposedHeaders: [
+        "X-AI-Tokens-Used",
+        "X-AI-Tokens-Used-Window",
+        "X-AI-Tokens-Remaining",
+        "X-AI-Tokens-Limit",
+        "X-AI-Requests-Used",
+        "X-AI-Requests-Remaining",
+        "X-AI-Requests-Limit",
+        "Retry-After"
+    ]
 }));
 
 const Authrouter = require('./routes/auth.routes');

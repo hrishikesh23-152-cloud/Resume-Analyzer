@@ -7,6 +7,26 @@ const api = axios.create({
     withCredentials: true,
 });
 
+const readAiUsage = (headers) => {
+    const readNumber = (name) => {
+        const rawValue = headers?.get?.(name) ?? headers?.[name.toLowerCase()];
+        if (rawValue === null || rawValue === undefined || rawValue === '') return null;
+
+        const value = Number(rawValue);
+        return Number.isFinite(value) ? value : null;
+    };
+
+    return {
+        tokensUsed: readNumber("x-ai-tokens-used"),
+        tokensUsedWindow: readNumber("x-ai-tokens-used-window"),
+        tokensRemaining: readNumber("x-ai-tokens-remaining"),
+        tokensLimit: readNumber("x-ai-tokens-limit"),
+        requestsUsed: readNumber("x-ai-requests-used"),
+        requestsRemaining: readNumber("x-ai-requests-remaining"),
+        requestsLimit: readNumber("x-ai-requests-limit")
+    };
+};
+
 export const generateInterviewReport = async ({ jobDescription, selfDescription, resumeFile }) => {
     const formData = new FormData();
     if (jobDescription) formData.append("jobDescription", jobDescription);
@@ -31,15 +51,15 @@ export const generateInterviewReport = async ({ jobDescription, selfDescription,
         }
     });
 
-    return response.data;
+    return { ...response.data, aiUsage: readAiUsage(response.headers) };
 };
 
 export const getInterviewReportById = async (interviewId) => {
     const response = await api.get(`/api/interview/report/${interviewId}`);
-    return response.data;
+    return { ...response.data, aiUsage: readAiUsage(response.headers) };
 };
 
 export const getAllInterviewReports = async () => {
     const response = await api.get("/api/interview/");
-    return response.data;
+    return { ...response.data, aiUsage: readAiUsage(response.headers) };
 };

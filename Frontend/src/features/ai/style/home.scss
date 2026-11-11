@@ -602,6 +602,12 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     }
 }
 
+.generation-error {
+    margin: 0 1.5rem 1rem;
+    color: #fda4af;
+    font-size: 0.875rem;
+}
+
 @keyframes pulseGlow {
     0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
     50% { transform: scale(1.06); box-shadow: 0 0 35px rgba(236, 72, 153, 0.6); }

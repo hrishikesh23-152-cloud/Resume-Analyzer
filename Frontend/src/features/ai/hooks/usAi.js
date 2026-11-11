@@ -1,7 +1,7 @@
 import { getAllInterviewReports, generateInterviewReport, getInterviewReportById } from "../services/ai.api"
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useEffectEvent } from "react"
 import { useParams } from "react-router"
-import {AiContext} from "../context/ai.context"
+import {AiContext} from "../context/ai.context.value.js"
 
 export const useAi = () => {
 
@@ -12,21 +12,26 @@ export const useAi = () => {
         throw new Error("useInterview must be used within an InterviewProvider")
     }
 
-    const { loading, setLoading, report, setReport, reports, setReports } = context
+    const {
+        loading, setLoading, generating, setGenerating, report, setReport,
+        reports, setReports, usage, setUsage
+    } = context
 
     const generateReport = async ({ jobDescription, selfDescription, resumeFile }) => {
-        setLoading(true)
-        let response = null
+        setGenerating(true)
         try {
-            response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile })
+            const response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile })
             setReport(response.interviewReport)
+            if (Object.values(response.aiUsage).some((value) => value !== null)) {
+                setUsage(response.aiUsage)
+            }
+            return response.interviewReport
         } catch (error) {
             console.log(error)
+            throw error
         } finally {
-            setLoading(false)
+            setGenerating(false)
         }
-
-        return response.interviewReport
     }
 
     const getReportById = async (interviewId) => {
@@ -35,12 +40,15 @@ export const useAi = () => {
         try {
             response = await getInterviewReportById(interviewId)
             setReport(response.interviewReport)
+            if (Object.values(response.aiUsage).some((value) => value !== null)) {
+                setUsage(response.aiUsage)
+            }
         } catch (error) {
             console.log(error)
         } finally {
             setLoading(false)
         }
-        return response.interviewReport
+        return response?.interviewReport || null
     }
 
     const getReports = async () => {
@@ -49,24 +57,30 @@ export const useAi = () => {
         try {
             response = await getAllInterviewReports()
             setReports(response.interviewReports)
+            if (Object.values(response.aiUsage).some((value) => value !== null)) {
+                setUsage(response.aiUsage)
+            }
         } catch (error) {
             console.log(error)
         } finally {
             setLoading(false)
         }
 
-        return response.interviewReports
+        return response?.interviewReports || []
     }
 
 
+    const loadReport = useEffectEvent((id) => getReportById(id))
+    const loadReports = useEffectEvent(() => getReports())
+
     useEffect(() => {
         if (interviewId) {
-            getReportById(interviewId)
+            loadReport(interviewId)
         } else {
-            getReports()
+            loadReports()
         }
     }, [ interviewId ])
 
-    return { loading, report, reports, generateReport, getReportById, getReports }
+    return { loading, generating, report, reports, usage, generateReport, getReportById, getReports }
 
 }

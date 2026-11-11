@@ -6,10 +6,28 @@ $text-muted:     #9ca3af;
 $accent:         #6366f1;
 $accent-alt:     #ec4899;
 $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 2vw, 1rem);
+    /* 1. Allow items to wrap instead of overlapping */
+    flex-wrap: wrap; 
+    justify-content: flex-end;
+}
 
+/* 2. Prevent the child elements from squishing */
+.user-actions > * {
+    flex-shrink: 0; 
+}
+
+.nav-link-btn {
+    /* (Keep your existing styles for this class, but ensure this is present) */
+    white-space: nowrap; /* Prevents "Job" and "Finder" from breaking into two lines */
+}
 .jobs-page {
     width: 100%;
-    min-height: 100vh;
+    /* 100dvh prevents layout shifts from mobile browser address bars */
+    min-height: 100dvh; 
     background-color: $bg-page;
     background-image:
         radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
@@ -19,37 +37,100 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1.5rem 1.5rem 3rem;
-    gap: 1.5rem;
-}
+    /* Fluid padding and gap */
+    padding: clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vw, 1.5rem) clamp(2rem, 5vw, 3rem);
+    gap: clamp(1rem, 2.5vw, 1.5rem);
 
-.jobs-page .top-nav,
-.jobs-page .page-header {
-    width: 100%;
-    max-width: 1100px;
-}
+    /* Consolidated max-width constraints using SCSS nesting */
+    .top-nav,
+    .page-header,
+    .jobs-search-card,
+    .jobs-error,
+    .jobs-empty,
+    .role-chips,
+    .jobs-grid {
+        width: 100%;
+        max-width: 1100px;
+    }
 
-.jobs-page .nav-brand {
-    cursor: pointer;
+    .nav-brand {
+        cursor: pointer;
+    }
+
+    /* Shared form elements */
+    .dropzone,
+    textarea,
+    input,
+    select {
+        width: 100%;
+        background: #111622;
+        border: 1px solid $border-color;
+        color: $text-primary;
+        border-radius: 0.75rem;
+        padding: clamp(0.75rem, 2vw, 0.85rem);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+        &:focus {
+            outline: none;
+            border-color: $accent;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+    }
+
+    textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .dropzone, .file-preview-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 120px;
+    }
+
+    .dropzone__subtitle {
+        color: $text-muted;
+        font-size: 0.9rem;
+    }
+
+    .generate-btn {
+        background: linear-gradient(135deg, $accent 0%, $accent-alt 100%);
+        border: none;
+        color: #fff;
+        font-weight: 700;
+        border-radius: 0.7rem;
+        padding: clamp(0.7rem, 2vw, 0.8rem) clamp(1rem, 3vw, 1.2rem);
+        cursor: pointer;
+        transition: transform 0.2s ease, filter 0.2s ease;
+
+        &:hover, &:focus-visible {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+    }
 }
 
 .nav-link-btn {
     color: #c7d2fe;
     text-decoration: none;
-    font-size: 0.875rem;
+    font-size: clamp(0.8rem, 1.5vw, 0.875rem);
     font-weight: 600;
     padding: 0.4rem 0.75rem;
     border: 1px solid rgba(99, 102, 241, 0.35);
     border-radius: 0.5rem;
+    transition: background 0.2s ease;
+
+    &:hover {
+        background: rgba(99, 102, 241, 0.1);
+    }
 }
 
 .jobs-search-card {
-    width: 100%;
-    max-width: 1100px;
     background: $bg-card;
     border: 1px solid $border-color;
     border-radius: 1rem;
-    padding: 1.25rem;
+    padding: clamp(1rem, 3vw, 1.25rem);
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -57,34 +138,14 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
 
 .jobs-search-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1rem;
-
-    @media (max-width: 768px) {
-        grid-template-columns: 1fr;
-    }
-}
-
-.jobs-page .dropzone,
-.jobs-page textarea,
-.jobs-page input,
-.jobs-page select {
-    width: 100%;
-    background: #111622;
-    border: 1px solid $border-color;
-    color: $text-primary;
-    border-radius: 0.75rem;
-    padding: 0.85rem;
-}
-
-.jobs-page textarea {
-    min-height: 120px;
-    resize: vertical;
 }
 
 .jobs-filters {
     display: grid;
-    grid-template-columns: 1fr 180px auto;
+    /* Adapts to available space automatically */
+    grid-template-columns: 1fr repeat(auto-fit, minmax(140px, auto));
     gap: 0.75rem;
 
     @media (max-width: 768px) {
@@ -92,51 +153,34 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     }
 }
 
-.jobs-page .generate-btn {
-    background: linear-gradient(135deg, $accent 0%, $accent-alt 100%);
-    border: none;
-    color: #fff;
-    font-weight: 700;
-    border-radius: 0.7rem;
-    padding: 0.8rem 1.2rem;
-    cursor: pointer;
-}
-
-.file-preview-card,
-.jobs-page .dropzone {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-height: 120px;
-}
-
+/* Typography styles */
 .report-hint,
-.jobs-page .dropzone__subtitle,
 .job-company,
 .job-location,
 .job-description {
     color: $text-muted;
-    font-size: 0.9rem;
+    font-size: clamp(0.85rem, 1.5vw, 0.9rem);
 }
 
+/* Feedback states */
 .jobs-error,
 .jobs-empty {
-    width: 100%;
-    max-width: 1100px;
     padding: 0.9rem 1rem;
     border-radius: 0.75rem;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    background: rgba(239, 68, 68, 0.1);
+    
+    &.jobs-error {
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        background: rgba(239, 68, 68, 0.1);
+    }
+    
+    &.jobs-empty {
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        background: rgba(99, 102, 241, 0.08);
+    }
 }
 
-.jobs-empty {
-    border-color: rgba(99, 102, 241, 0.3);
-    background: rgba(99, 102, 241, 0.08);
-}
-
+/* Role Chips */
 .role-chips {
-    width: 100%;
-    max-width: 1100px;
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
@@ -153,46 +197,61 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     flex-direction: column;
     align-items: flex-start;
     gap: 0.15rem;
+    transition: all 0.2s ease;
 
     span {
         font-size: 0.75rem;
         color: $text-muted;
     }
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    &--active {
+        border-color: $accent;
+        background: rgba(99, 102, 241, 0.16);
+        
+        &:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+    }
 }
 
-.role-chip--active {
-    border-color: $accent;
-    background: rgba(99, 102, 241, 0.16);
-}
-
+/* Job Cards Grid */
 .jobs-grid {
-    width: 100%;
-    max-width: 1100px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
+    /* auto-fill with minmax handles responsiveness entirely without @media queries */
+    grid-template-columns: repeat(auto-fill, minmax(clamp(250px, 30vw, 280px), 1fr));
+    gap: clamp(1rem, 2vw, 1.25rem);
 }
 
 .job-card {
     background: $bg-card;
     border: 1px solid $border-color;
     border-radius: 1rem;
-    padding: 1rem;
+    padding: clamp(1rem, 2.5vw, 1.25rem);
     display: flex;
     flex-direction: column;
     gap: 0.45rem;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+        transform: translateY(-3px);
+        border-color: rgba(99, 102, 241, 0.5);
+    }
 
     h3 {
         margin: 0;
-        font-size: 1.05rem;
+        font-size: clamp(1rem, 2vw, 1.05rem);
     }
-}
 
-.job-card__top {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.5rem;
-    align-items: center;
+    &__top {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
 }
 
 .job-role-badge {
@@ -202,6 +261,7 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     padding: 0.2rem 0.55rem;
     font-size: 0.75rem;
     font-weight: 700;
+    white-space: nowrap;
 }
 
 .apply-btn {
@@ -213,8 +273,14 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     border-radius: 0.6rem;
     padding: 0.6rem;
     font-weight: 600;
+    transition: background 0.2s ease;
+
+    &:hover, &:focus-visible {
+        background: lighten(#6366f1, 5%);
+    }
 }
 
+/* Overlays */
 .ai-loading-overlay {
     position: fixed;
     inset: 0;
@@ -223,13 +289,16 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
     align-items: center;
     justify-content: center;
     z-index: 20;
+    backdrop-filter: blur(4px); /* Adds a modern frosted glass effect to the background */
+    padding: 1rem; /* Prevents modal from touching edges on small screens */
 }
 
 .ai-loading-card {
     background: $bg-card;
     border: 1px solid $border-color;
     border-radius: 1rem;
-    padding: 2rem;
+    padding: clamp(1.5rem, 4vw, 2rem);
     text-align: center;
+    width: 100%;
     max-width: 420px;
 }

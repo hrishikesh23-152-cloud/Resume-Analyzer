@@ -1,6 +1,6 @@
-import { useContext, useEffect } from "react";
-import { AuthContext } from "../context/auth.context";
-import { register, login, logout, getMe } from "../services/auth.api";
+import { useContext } from "react";
+import { AuthContext } from "../context/auth.context.value.js";
+import { register, login, logout } from "../services/auth.api";
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
@@ -8,13 +8,14 @@ export const useAuth = () => {
         throw new Error("useAuth must be used within an AuthProvider");
     }
 
-    const { user, setUser, loading, setLoading } = context;
+    const { user, setUser, loading, setLoading, sessionError, retrySession, setSessionError } = context;
 
     const handleLogin = async ({ email, password }) => {
         setLoading(true);
         try {
             const data = await login({ email, password });
             setUser(data.user);
+            setSessionError(null);
             return data;
         } catch (err) {
             console.error("Login Error:", err);
@@ -30,6 +31,7 @@ export const useAuth = () => {
         try {
             const data = await register({ name, email, password });
             setUser(data.user);
+            setSessionError(null);
             return data;
         } catch (err) {
             console.error("Register Error:", err);
@@ -52,20 +54,5 @@ export const useAuth = () => {
         }
     };
 
-    useEffect(() => {
-        const getAndSetUser = async () => {
-            try {
-                const data = await getMe();
-                setUser(data.user);
-            } catch (err) {
-                setUser(null);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        getAndSetUser();
-    }, []);
-
-    return { user, loading, handleRegister, handleLogin, handleLogout };
+    return { user, loading, sessionError, retrySession, handleRegister, handleLogin, handleLogout };
 };

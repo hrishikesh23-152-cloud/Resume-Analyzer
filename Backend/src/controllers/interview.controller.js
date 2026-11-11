@@ -1,6 +1,26 @@
-const { generateInterviewReport } = require("../AI/ai.method");
+const { generateInterviewReport, getRateLimitSnapshot } = require("../AI/ai.method");
 const interviewReportModel = require("../models/interviewAI.model");
 const { extractResumeText } = require("../utils/parseResume");
+
+function setAiUsageHeaders(res, quota, usage = {}) {
+    const headerValues = {
+        "X-AI-Tokens-Used": usage.total_tokens,
+        "X-AI-Tokens-Used-Window": quota.tokenLimit !== null && quota.tokensRemaining !== null
+            ? quota.tokenLimit - quota.tokensRemaining
+            : null,
+        "X-AI-Tokens-Remaining": quota.tokensRemaining,
+        "X-AI-Tokens-Limit": quota.tokenLimit,
+        "X-AI-Requests-Used": quota.requestLimit !== null && quota.requestsRemaining !== null
+            ? quota.requestLimit - quota.requestsRemaining
+            : null,
+        "X-AI-Requests-Remaining": quota.requestsRemaining,
+        "X-AI-Requests-Limit": quota.requestLimit
+    };
+
+    for (const [name, value] of Object.entries(headerValues)) {
+        if (Number.isFinite(value)) res.set(name, String(value));
+    }
+}
 
 async function generateInterViewReportController(req, res) {
     try {
@@ -14,7 +34,7 @@ async function generateInterViewReportController(req, res) {
             }
         }
 
-        const interViewReportByAi = await generateInterviewReport({
+        const { report, usage, quota } = await generateInterviewReport({
             resume: resumeText,
             selfDescription: selfDescription || "",
             jobDescription: jobDescription || ""
@@ -25,16 +45,22 @@ async function generateInterViewReportController(req, res) {
             resume: resumeText,
             selfDescription,
             jobDescription,
-            ...interViewReportByAi
+            ...report
         });
 
+        setAiUsageHeaders(res, quota, usage);
         res.status(201).json({
             message: "Interview report generated successfully.",
             interviewReport
         });
     } catch (error) {
         console.error("Error in generateInterViewReportController:", error);
-        res.status(500).json({
+        const status = error.status === 429 ? 429 : 500;
+        setAiUsageHeaders(res, getRateLimitSnapshot());
+        if (status === 429 && Number.isFinite(error.retryAfter)) {
+            res.set("Retry-After", String(error.retryAfter));
+        }
+        res.status(status).json({
             message: error.message || "Failed to generate interview report"
         });
     }
@@ -51,6 +77,7 @@ async function getInterviewReportByIdController(req, res) {
             });
         }
 
+        setAiUsageHeaders(res, getRateLimitSnapshot());
         res.status(200).json({
             message: "Interview report fetched successfully.",
             interviewReport
@@ -65,6 +92,7 @@ async function getInterviewReportByIdController(req, res) {
 
 async function getAllInterviewReportsController(req, res) {
     try {
+        setAiUsageHeaders(res, getRateLimitSnapshot());
         const interviewReports = await interviewReportModel.find({ user: req.user.id })
             .sort({ createdAt: -1 })
             .select("-resume -selfDescription -jobDescription -__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan");

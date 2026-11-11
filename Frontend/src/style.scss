@@ -1,13 +1,386 @@
-*{
+
+/* ==============================
+   1. Global Styles & Variables
+================================= */
+
+:root {
+    --bg-page: #0b0f19;
+    --bg-card: #141923;
+    --border-color: #232d3f;
+    --text-primary: #f3f4f6;
+    --text-muted: #9ca3af;
+    --accent: #6366f1;
+    --danger: #ef4444;
+}
+
+* {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
 }
+
 html,
 body,
-#root{
+#root {
     width: 100%;
+    min-height: 100vh;
     background-color: rgb(26, 24, 24);
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
 
+
+/* ==============================
+   2. Interview Header
+================================= */
+
+.interview-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    width: 100%;
+    padding: clamp(1rem, 2vw, 1.5rem);
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-page);
+}
+
+.header-bar-left {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.5rem, 2vw, 1rem);
+    flex: 1 1 auto;
+}
+
+.back-btn-pill,
+.jobs-btn-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.back-btn-pill:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.jobs-btn-pill {
+    background: rgba(99, 102, 241, 0.1);
+    color: #c7d2fe;
+    border-color: rgba(99, 102, 241, 0.35);
+}
+
+.jobs-btn-pill:hover {
+    background: rgba(99, 102, 241, 0.2);
+}
+
+.header-divider {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+}
+
+.report-position-title {
+    max-width: 300px;
+    margin: 0;
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: clamp(1.1rem, 2vw, 1.25rem);
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.header-bar-right {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.generated-date {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+
+/* ==============================
+   3. Page Loading
+================================= */
+
+.page-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1rem, 2vw, 1.5rem);
+    min-height: 100dvh;
+    padding: 1rem;
+    color: #e8edf2;
+    background: radial-gradient(
+        ellipse at 50% 45%,
+        #24323a 0%,
+        #171d20 46%,
+        #111416 100%
+    );
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
+    text-align: center;
+}
+
+.page-loading__spinner {
+    width: clamp(36px, 6vw, 48px);
+    aspect-ratio: 1;
+    border: clamp(2px, 0.5vw, 4px) solid rgba(232, 237, 242, 0.18);
+    border-top-color: #42d6b2;
+    border-right-color: #f0a85e;
+    border-radius: 50%;
+    animation: page-loading-spin 0.8s linear infinite;
+}
+
+.session-retry-button {
+    padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.9rem, 2vw, 1.25rem);
+    border: 1px solid rgba(66, 214, 178, 0.55);
+    border-radius: 0.4rem;
+    background: rgba(66, 214, 178, 0.1);
+    color: #e8edf2;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.session-retry-button:hover,
+.session-retry-button:focus-visible {
+    background: rgba(66, 214, 178, 0.2);
+    transform: scale(1.05);
+    outline: none;
+}
+
+@keyframes page-loading-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* ==============================
+   4. Top Navigation
+================================= */
+
+.top-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    width: 100%;
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-page);
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.brand-icon {
+    display: flex;
+    color: var(--accent);
+}
+
+.brand-title {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.brand-accent {
+    color: var(--accent);
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.nav-link-btn,
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.nav-link-btn {
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    background: rgba(99, 102, 241, 0.1);
+    color: #c7d2fe;
+}
+
+.nav-link-btn:hover {
+    background: rgba(99, 102, 241, 0.2);
+}
+
+.logout-btn {
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-muted);
+}
+
+.logout-btn:hover {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.user-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 1rem 0.25rem 0.25rem;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.user-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    font-weight: bold;
+}
+
+.user-name {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.mobile-menu-btn {
+    display: none;
+    padding: 0.5rem;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+
+/* ==============================
+   5. Responsive Design
+================================= */
+
+@media (max-width: 768px) {
+
+    /* Interview Header */
+
+    .interview-header-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-bar-left,
+    .header-bar-right {
+        width: 100%;
+    }
+
+    .report-position-title {
+        max-width: 100%;
+    }
+
+    .back-btn-pill .back-text {
+        display: none;
+    }
+
+    .back-btn-pill {
+        padding: 0.5rem;
+    }
+
+    .header-bar-right > * {
+        flex-shrink: 0;
+    }
+
+
+    /* Navigation */
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .user-actions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.25rem;
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        background: var(--bg-card);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        z-index: 9;
+    }
+
+    .user-actions.is-open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .nav-link-btn,
+    .logout-btn {
+        justify-content: center;
+        width: 100%;
+        padding: 0.75rem;
+    }
+
+    .user-chip {
+        justify-content: center;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+    }
+}
+
+
+/* ==============================
+   6. Accessibility
+================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .page-loading__spinner {
+        animation-duration: 2s;
+    }
+
+    .session-retry-button,
+    .user-actions {
+        transition: none;
+    }
+
+    .session-retry-button {
+        transform: none;
+    }
 }

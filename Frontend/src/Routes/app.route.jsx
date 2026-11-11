@@ -1,34 +1,38 @@
+import { lazy, Suspense } from "react"
 import {createBrowserRouter} from "react-router-dom"
-import Register from "../features/auth/pages/Register.jsx"
-import Login from "../features/auth/pages/Login.jsx"
 import Protected from "../features/auth/components/Protected.jsx"
-import Home from "../features/ai/pages/home.jsx"
-import Interview from "../features/ai/pages/airesult.jsx"
-import JobFinder from "../features/jobs/pages/jobs.jsx"
-export const router = createBrowserRouter([ {
+
+const withPage = (loadPage, isProtected = false) => {
+    const Page = lazy(loadPage)
+
+    return <Suspense fallback={(
+        <main className="page-loading" role="status" aria-live="polite">
+            <span className="page-loading__spinner" />
+            <span>Loading your workspace</span>
+        </main>
+    )}>
+        {isProtected ? <Protected><Page /></Protected> : <Page />}
+    </Suspense>
+}
+
+export const router = createBrowserRouter([{
         path: "/login",
-        element: <Login />
+        element: withPage(() => import("../features/auth/pages/Login.jsx"))
     },
     {
         path: "/register",
-        element: <Register />
+        element: withPage(() => import("../features/auth/pages/Register.jsx"))
     },
     {
         path: "/",
-        element: <Protected>
-            <Home />
-        </Protected>
+        element: withPage(() => import("../features/ai/pages/home.jsx"), true)
     },
     {
         path: "/interview/:interviewId",
-        element: <Protected>
-            <Interview />
-        </Protected>
+        element: withPage(() => import("../features/ai/pages/airesult.jsx"), true)
     },
     {
         path: "/jobs",
-        element: <Protected>
-            <JobFinder />
-        </Protected>
+        element: withPage(() => import("../features/jobs/pages/jobs.jsx"), true)
     }
 ])
